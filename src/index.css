@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Caveat&family=Zen+Maru+Gothic&display=swap');
 
   body {
-  font-family: 'Caveat', cursive;
-  font-family: 'Zen Maru Gothic', serif;
-}
+    font-family: 'Caveat', cursive;
+    font-family: 'Zen Maru Gothic', serif;
+    background: #96E671;
+  }
