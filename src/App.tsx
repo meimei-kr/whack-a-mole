@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css, keyframes } from '@emotion/react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useReward } from 'react-rewards'
 import hole from './assets/hole.png'
 import mole from './assets/mole.png'
@@ -24,42 +24,43 @@ const App = () => {
 
   const { reward } = useReward('rewardId', 'confetti', { lifetime: 1000, spread: 90 });
 
+  // どのモグラがどの穴から出るかを決める
+  const molesIntervalRef = useRef<number | null>(null)
   useEffect(() => {
-    let interval: number | null = null;
     if (isPlaying && score < SUCCESS_SCORE && remainingTime > 0) {
-      interval = setInterval(() => {
+      molesIntervalRef.current = setInterval(() => {
         const randomIndex = Math.floor(Math.random() * moles.length)
         setMoleVisibility(randomIndex, true)
         setTimeout(() => {
           setMoleVisibility(randomIndex, false)
         }, 700)
       }, 1000)
-    } else if (interval && (score >= SUCCESS_SCORE || remainingTime <= 0)) {
+    } else if (molesIntervalRef.current && (score >= SUCCESS_SCORE || remainingTime <= 0)) {
       setIsPlaying(false)
-      clearInterval(interval)
+      clearInterval(molesIntervalRef.current)
     }
 
     return () => {
-      if (interval) {
-        clearInterval(interval)
+      if (molesIntervalRef.current) {
+        clearInterval(molesIntervalRef.current)
       }
     }
   }, [moles, isPlaying, score, remainingTime])
 
+  // 残り時間のカウントダウン処理
+  const timerIntervalRef = useRef<number | null>(null)
   useEffect(() => {
-    let interval: number | null = null;
     if (isPlaying && remainingTime > 0) {
-      interval = setInterval(() => {
+      timerIntervalRef.current = setInterval(() => {
         setRemainingTime((prevTime) => prevTime - 1)
       }, 1000)
-    } else if (remainingTime <= 0 && interval) {
-      clearInterval(interval)
-      setIsPlaying(false)
+    } else if (remainingTime <= 0 && timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current)
     }
 
     return () => {
-      if (interval) {
-        clearInterval(interval)
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current)
       }
     }
   }, [isPlaying, remainingTime])
