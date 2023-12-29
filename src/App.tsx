@@ -11,7 +11,7 @@ import smMole from './assets/sm-mole.png'
 import smBlueMole from './assets/sm-blue-mole.png'
 import smRainbowMole from './assets/sm-rainbow-mole.png'
 
-const SUCCESS_SCORE = 15
+const SUCCESS_SCORE = 20
 
 const App = () => {
   const [moles, setMoles] = useState<{ isVisible: boolean, moleType: number }[]>(
@@ -126,7 +126,9 @@ const App = () => {
   }
 
   const handleStart = () => {
-    scrollToBottom()
+    setTimeout(() => {
+      scrollToBottom();
+    }, 100);
     setIsPlaying(true)
     setScore(0)
     setRemainingTime(60)
@@ -162,6 +164,7 @@ const App = () => {
 
     @media screen and (max-width: 500px) {
       width: 90vw;
+      margin: 0 auto 150px;
     }
   `
 
@@ -193,6 +196,13 @@ const App = () => {
     font-weight: bold;
     padding: 0 5px;
   `
+
+  const timeUpStyle = css`
+    @media screen and (max-width: 500px) {
+      display: inline-block;
+    }
+  `
+
   const scoreStyle = css`
     ${displayStyle}
     color: ${score >= SUCCESS_SCORE ? '#C40D17' : 'initial'};
@@ -266,8 +276,17 @@ const App = () => {
     border: none;
     background-color: #FB8B24;
     color: white;
-    cursor: pointer;
+    cursor: ${isPlaying ? 'not-allowed' : 'pointer'};
     font-size: 1.5rem;
+
+    &:hover {
+      opacity: ${isPlaying ? 1 : 0.9};
+    }
+
+    &:active {
+      transform: ${isPlaying ? 'none' : 'translate(0, 2px)'};
+      opacity: ${isPlaying ? 1 : 0.9};
+    }
   `
 
   const confettiStyle = css`
@@ -338,11 +357,11 @@ const App = () => {
             <span css={spanStyle}>得点: <span css={scoreStyle}>{score}</span>点</span>
             {
               remainingTime <= 0
-                ? <span>時間切れです。またチャレンジしてね！</span>
+                ? <span css={timeUpStyle}>時間切れです。またチャレンジしてね！</span>
                 : <span>残り時間: <span css={displayStyle}>{remainingTime}</span>秒</span>
             }
           </div>
-          <button css={buttonStyle} onClick={handleStart}>S T A R T</button>
+          <button css={buttonStyle} onClick={handleStart} disabled={isPlaying}>S T A R T</button>
         </div>
       </div>
       <div>
@@ -367,6 +386,7 @@ const App = () => {
       <div css={gridStyle}>
         {moles.map((mole, index) => (
           <img
+            draggable="false"
             key={index}
             src={getMoleImage(mole.isVisible, mole.moleType)}
             css={imageStyle}
