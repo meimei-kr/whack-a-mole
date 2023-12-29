@@ -22,7 +22,7 @@ const App = () => {
   const [remainingTime, setRemainingTime] = useState<number>(60)
   const [isSuccess, setIsSuccess] = useState<boolean>(false)
 
-  const { reward, isAnimating } = useReward('rewardId', 'confetti', { lifetime: 1000, spread: 90 });
+  const { reward } = useReward('rewardId', 'confetti', { lifetime: 1000, spread: 90 });
 
   useEffect(() => {
     let interval: number | null = null;
