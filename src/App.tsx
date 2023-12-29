@@ -5,10 +5,13 @@ import { useReward } from 'react-rewards'
 import hole from './assets/hole.png'
 import mole from './assets/mole.png'
 import hammer from './assets/hammer.png'
-import redMole from './assets/rainbow-mole.png'
+import rainbowMole from './assets/rainbow-mole.png'
 import blueMole from './assets/blue-mole.png'
+import smMole from './assets/sm-mole.png'
+import smBlueMole from './assets/sm-blue-mole.png'
+import smRainbowMole from './assets/sm-rainbow-mole.png'
 
-const SUCCESS_SCORE = 10
+const SUCCESS_SCORE = 15
 
 const App = () => {
   const [moles, setMoles] = useState<{ isVisible: boolean, moleType: number }[]>(
@@ -115,11 +118,15 @@ const App = () => {
     })
   }
 
-  const handleStart = () => {
-    setIsPlaying(true)
+  const scrollToBottom = () => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth'
+    })
   }
 
-  const handleRestart = () => {
+  const handleStart = () => {
+    scrollToBottom()
     setIsPlaying(true)
     setScore(0)
     setRemainingTime(60)
@@ -134,7 +141,7 @@ const App = () => {
         case 1:
           return blueMole
         case 2:
-          return redMole
+          return rainbowMole
       }
     } else {
       return hole
@@ -142,12 +149,25 @@ const App = () => {
   }
 
   // CSS
+  const containerStyle = css`
+    width: 100%;
+  `
+
   const gridStyle = css`
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    margin: 0 auto;
+    margin: 0 auto 30px;
     width: 768px;
     cursor: url(${hammer}), pointer;
+
+    @media screen and (max-width: 500px) {
+      width: 90vw;
+    }
+  `
+
+  const imageStyle = css`
+    width: 100%;
+    height: auto;
   `
 
   const h1Style = css`
@@ -158,6 +178,7 @@ const App = () => {
       1px -1px 0 #000, // 右上に黒い影
       -1px  1px 0 #000, // 左下に黒い影
       1px  1px 0 #000; // 右下に黒い影
+    margin: 30px 0 20px;
   `
   const scoreTimeStyle = css`
     text-align: center;
@@ -168,9 +189,13 @@ const App = () => {
   `
 
   const displayStyle = css`
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: bold;
     padding: 0 5px;
+  `
+  const scoreStyle = css`
+    ${displayStyle}
+    color: ${score >= SUCCESS_SCORE ? '#C40D17' : 'initial'};
   `
 
   const textAnimation = keyframes`
@@ -187,9 +212,10 @@ const App = () => {
   const successStyle = css`
     text-align: center;
     color: #C40D17;
-    font-size: 1.5rem;
     font-weight: bold;
-    height: 1.5rem;
+    font-size: 1.5rem;
+    height: 2rem;
+    margin: 10px 0;
     &.animate span {
       display: inline-block;
       letter-spacing: -0.15rem;
@@ -235,12 +261,13 @@ const App = () => {
   const buttonStyle = css`
     display: block;
     margin: 20px auto;
-    padding: 10px 20px;
+    padding: 20px 30px;
     border-radius: 30px;
     border: none;
     background-color: #FB8B24;
     color: white;
     cursor: pointer;
+    font-size: 1.5rem;
   `
 
   const confettiStyle = css`
@@ -248,51 +275,106 @@ const App = () => {
     top: 0;
     left: 50%;
   `
+  const descriptionStyle = css`
+    width: 220px;
+    height: 150px;
+    background-color: #fff;
+    padding: 30px;
+    border: none;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 30px;
+
+    @media screen and (max-width: 500px) {
+      margin-right: 0;
+      margin-bottom: 30px;
+    }
+  `
+  const descInnerStyle = css`
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  `
+
+  const pStyle = css`
+    margin: 0 0 10px;
+  `
+
+  const moleImageStyle = css`
+    height: 2rem;
+    margin: 0 10px;
+    vertical-align: bottom;
+  `
+
+  const sectionStyle = css`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    @media screen and (max-width: 500px) {
+      flex-direction: column;
+    }
+  `
 
   return (
-    <>
+    <div css={containerStyle}>
       <div css={confettiStyle} id="rewardId"></div>
       <h1 css={h1Style}>モグラたたき</h1>
-      {
-        isSuccess
-          ? <p className="message" css={successStyle}>
-              <span>お</span>
-              <span>め</span>
-              <span>で</span>
-              <span>と</span>
-              <span>う</span>
-              <span>！</span>
-              <span>成</span>
-              <span>功</span>
-              <span>で</span>
-              <span>す</span>
-              <span>！</span>
-            </p>
-          : <p css={successStyle}></p>
-      }
-      <div css={scoreTimeStyle}>
-        <span css={spanStyle}>得点: <span css={displayStyle}>{score}</span>点</span>
-        {
-          remainingTime <= 0
-            ? <span>時間切れです。またチャレンジしてね！</span>
-            : <span>残り時間: <span css={displayStyle}>{remainingTime}</span>秒</span>
-        }
+      <div css={sectionStyle}>
+        <div css={descriptionStyle}>
+          <div css={descInnerStyle}>
+            <p css={pStyle}>{SUCCESS_SCORE}点取得でクリアです。</p>
+            <p css={pStyle}>茶モグラ<img src={smMole} css={moleImageStyle} />:  + 1 点</p>
+            <p css={pStyle}>青モグラ<img src={smBlueMole} css={moleImageStyle} />:  - 1 点</p>
+            <p css={pStyle}>虹モグラ<img src={smRainbowMole} css={moleImageStyle} />:  + 2 点</p>
+          </div>
+        </div>
+        <div>
+          <div css={scoreTimeStyle}>
+            <span css={spanStyle}>得点: <span css={scoreStyle}>{score}</span>点</span>
+            {
+              remainingTime <= 0
+                ? <span>時間切れです。またチャレンジしてね！</span>
+                : <span>残り時間: <span css={displayStyle}>{remainingTime}</span>秒</span>
+            }
+          </div>
+          <button css={buttonStyle} onClick={handleStart}>S T A R T</button>
+        </div>
       </div>
-      {
-        isSuccess || remainingTime <= 0
-          ? <button css={buttonStyle} onClick={handleRestart}>R E S T A R T</button>
-          : <button css={buttonStyle} onClick={handleStart}>S T A R T</button>
-      }
+      <div>
+        {
+          isSuccess
+            ? <p className="message" css={successStyle}>
+                <span>お</span>
+                <span>め</span>
+                <span>で</span>
+                <span>と</span>
+                <span>う</span>
+                <span>！</span>
+                <span>成</span>
+                <span>功</span>
+                <span>で</span>
+                <span>す</span>
+                <span>！</span>
+              </p>
+            : <p css={successStyle}></p>
+          }
+      </div>
       <div css={gridStyle}>
         {moles.map((mole, index) => (
           <img
             key={index}
             src={getMoleImage(mole.isVisible, mole.moleType)}
+            css={imageStyle}
             onClick={() => mole.isVisible && handleClick(index)}
           />
         ))}
       </div>
-    </>
+    </div>
   )
 }
 
