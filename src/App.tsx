@@ -8,7 +8,9 @@ import hammer from './assets/hammer.png'
 const SUCCESS_SCORE = 20
 
 const App = () => {
-  const [moles, setMoles] = useState<boolean[]>([...Array(9)].fill(false))
+  const [moles, setMoles] = useState<{ isVisible: boolean, moleType: number }[]>(
+    [...Array(9)].fill({ isVisible: false, moleType: 0 })
+  )
   const [score, setScore] = useState<number>(0)
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   const [remainingTime, setRemainingTime] = useState<number>(60)
