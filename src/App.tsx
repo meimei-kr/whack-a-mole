@@ -34,9 +34,17 @@ const App = () => {
     if (isPlaying && score < SUCCESS_SCORE && remainingTime > 0) {
       molesIntervalRef.current = setInterval(() => {
         const randomIndex = Math.floor(Math.random() * moles.length)
+        let randomOtherIndex: number
+        do {
+          randomOtherIndex = Math.floor(Math.random() * moles.length)
+        } while (randomIndex === randomOtherIndex)
+
         setMoleVisibility(randomIndex, true)
+        setMoleVisibility(randomOtherIndex, true)
+
         setTimeout(() => {
           setMoleVisibility(randomIndex, false)
+          setMoleVisibility(randomOtherIndex, false)
         }, isPC ? 700 : 600)
       }, isPC ? 800 : 700)
     } else if (molesIntervalRef.current && (score >= SUCCESS_SCORE || remainingTime <= 0)) {
