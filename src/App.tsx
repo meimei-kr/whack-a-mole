@@ -11,7 +11,8 @@ import smMole from './assets/sm-mole.png'
 import smBlueMole from './assets/sm-blue-mole.png'
 import smRainbowMole from './assets/sm-rainbow-mole.png'
 
-const SUCCESS_SCORE = 20
+const SUCCESS_SCORE = 15
+const TIME_LIMIT = 30
 
 const App = () => {
   const [moles, setMoles] = useState<{ isVisible: boolean, moleType: number }[]>(
@@ -19,7 +20,7 @@ const App = () => {
   ) // moleType: 0 -> 普通のモグラ, 1 -> 青モグラ, 2 -> 虹モグラ
   const [score, setScore] = useState<number>(0)
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
-  const [remainingTime, setRemainingTime] = useState<number>(60)
+  const [remainingTime, setRemainingTime] = useState<number>(TIME_LIMIT)
   const [isSuccess, setIsSuccess] = useState<boolean>(false)
 
   const { reward } = useReward('rewardId', 'confetti', { lifetime: 1000, spread: 90 });
@@ -38,7 +39,7 @@ const App = () => {
         setMoleVisibility(randomIndex, true);
         setTimeout(() => {
           setMoleVisibility(randomIndex, false);
-        }, isPC ? 900 : 700);
+        }, isPC ? 800 : 600);
 
         // 少し遅れて二つ目のモグラを表示
         setTimeout(() => {
@@ -50,9 +51,9 @@ const App = () => {
           setMoleVisibility(randomOtherIndex, true);
           setTimeout(() => {
             setMoleVisibility(randomOtherIndex, false);
-          }, isPC ? 900 : 700); // 2つ目のモグラが表示されてから非表示になるまでの時間
+          }, isPC ? 800 : 600); // 2つ目のモグラが表示されてから非表示になるまでの時間
         }, isPC ? 400 : 300); // 遅延時間
-      }, isPC ? 1000 : 800);
+      }, isPC ? 900 : 700);
 
     } else if (molesIntervalRef.current && (score >= SUCCESS_SCORE || remainingTime <= 0)) {
       setIsPlaying(false)
@@ -151,7 +152,7 @@ const App = () => {
     }, 100);
     setIsPlaying(true)
     setScore(0)
-    setRemainingTime(60)
+    setRemainingTime(TIME_LIMIT)
     setIsSuccess(false)
   }
 
