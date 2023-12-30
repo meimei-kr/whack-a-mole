@@ -27,14 +27,18 @@ const App = () => {
   // どのモグラがどの穴から出るかを決める
   const molesIntervalRef = useRef<number | null>(null)
   useEffect(() => {
+    // ユーザーエージェントの文字列をチェックし、PCかどうかを判定
+    const ua = navigator.userAgent
+    const isPC = !/iPhone|Android|iPad|Mobile/i.test(ua)
+
     if (isPlaying && score < SUCCESS_SCORE && remainingTime > 0) {
       molesIntervalRef.current = setInterval(() => {
         const randomIndex = Math.floor(Math.random() * moles.length)
         setMoleVisibility(randomIndex, true)
         setTimeout(() => {
           setMoleVisibility(randomIndex, false)
-        }, 700)
-      }, 1000)
+        }, isPC ? 700 : 500)
+      }, isPC ? 1000 : 800)
     } else if (molesIntervalRef.current && (score >= SUCCESS_SCORE || remainingTime <= 0)) {
       setIsPlaying(false)
       clearInterval(molesIntervalRef.current)
