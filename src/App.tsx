@@ -33,20 +33,27 @@ const App = () => {
 
     if (isPlaying && score < SUCCESS_SCORE && remainingTime > 0) {
       molesIntervalRef.current = setInterval(() => {
-        const randomIndex = Math.floor(Math.random() * moles.length)
-        let randomOtherIndex: number
-        do {
-          randomOtherIndex = Math.floor(Math.random() * moles.length)
-        } while (randomIndex === randomOtherIndex)
-
-        setMoleVisibility(randomIndex, true)
-        setMoleVisibility(randomOtherIndex, true)
-
+        // 最初のモグラを表示
+        const randomIndex = Math.floor(Math.random() * moles.length);
+        setMoleVisibility(randomIndex, true);
         setTimeout(() => {
-          setMoleVisibility(randomIndex, false)
-          setMoleVisibility(randomOtherIndex, false)
-        }, isPC ? 700 : 600)
-      }, isPC ? 800 : 700)
+          setMoleVisibility(randomIndex, false);
+        }, isPC ? 900 : 700);
+
+        // 少し遅れて二つ目のモグラを表示
+        setTimeout(() => {
+          let randomOtherIndex: number;
+          do {
+            randomOtherIndex = Math.floor(Math.random() * moles.length);
+          } while (randomOtherIndex === randomIndex); // randomIndexとの重複を避ける
+
+          setMoleVisibility(randomOtherIndex, true);
+          setTimeout(() => {
+            setMoleVisibility(randomOtherIndex, false);
+          }, isPC ? 900 : 700); // 2つ目のモグラが表示されてから非表示になるまでの時間
+        }, isPC ? 400 : 300); // 遅延時間
+      }, isPC ? 1000 : 800);
+
     } else if (molesIntervalRef.current && (score >= SUCCESS_SCORE || remainingTime <= 0)) {
       setIsPlaying(false)
       clearInterval(molesIntervalRef.current)
