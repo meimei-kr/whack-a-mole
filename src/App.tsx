@@ -37,8 +37,8 @@ const App = () => {
         setMoleVisibility(randomIndex, true)
         setTimeout(() => {
           setMoleVisibility(randomIndex, false)
-        }, isPC ? 700 : 500)
-      }, isPC ? 800 : 600)
+        }, isPC ? 700 : 600)
+      }, isPC ? 800 : 700)
     } else if (molesIntervalRef.current && (score >= SUCCESS_SCORE || remainingTime <= 0)) {
       setIsPlaying(false)
       clearInterval(molesIntervalRef.current)
