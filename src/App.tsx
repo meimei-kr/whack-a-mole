@@ -248,7 +248,7 @@ const App = () => {
     text-align: center;
     color: #C40D17;
     font-weight: bold;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     height: 2rem;
     margin: 10px 0;
     &.animate span {
@@ -381,6 +381,7 @@ const App = () => {
     }
 
     @media screen and (max-width: 500px) {
+      display: block;
       margin-top: 20px;
       margin-left: 0;
       margin-bottom: 30px;
