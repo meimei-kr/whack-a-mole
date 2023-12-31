@@ -210,10 +210,19 @@ const App = () => {
   `
   const scoreTimeStyle = css`
     text-align: center;
+
+    @media screen and (max-width: 500px) {
+      display: flex;
+      flex-direction: column;
+    }
   `
 
   const spanStyle = css`
     margin-right: 30px;
+
+    @media screen and (max-width: 500px) {
+      margin-right: 0;
+    }
   `
 
   const displayStyle = css`
@@ -248,7 +257,7 @@ const App = () => {
     text-align: center;
     color: #C40D17;
     font-weight: bold;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     height: 2rem;
     margin: 10px 0;
     &.animate span {
@@ -391,6 +400,10 @@ const App = () => {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    @media screen and (max-width: 500px) {
+      flex-direction: column;
+    }
   `
 
   const footerStyle = css`
