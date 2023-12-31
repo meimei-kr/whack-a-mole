@@ -196,7 +196,6 @@ const App = () => {
   const imageStyle = css`
     width: 100%;
     height: auto;
-    -webkit-tap-highlight-color: transparent; // Androidで画像をタップした時のハイライトを消す
   `
 
   const h1Style = css`
