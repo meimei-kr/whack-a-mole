@@ -2,6 +2,7 @@
 import { css, keyframes } from '@emotion/react'
 import { useState, useEffect, useRef } from 'react'
 import { useReward } from 'react-rewards'
+import { TwitterShareButton, XIcon } from 'react-share'
 import hole from './assets/hole.png'
 import mole from './assets/mole.png'
 import hammer from './assets/hammer.png'
@@ -13,6 +14,9 @@ import smRainbowMole from './assets/sm-rainbow-mole.png'
 
 const SUCCESS_SCORE = 15
 const TIME_LIMIT = 30
+const URL = "https://whack-a-mole-psi.vercel.app/"
+const MESSAGE_SUCCESS = "おめでとう！モグラたたきマスターになりました！ #ミニアプリweek"
+const MESSAGE_FAIL = "モグラたたきマスターまであと一歩！次こそ成功するぞ！ #ミニアプリweek"
 
 const App = () => {
   const [moles, setMoles] = useState<{ isVisible: boolean, moleType: number }[]>(
@@ -360,10 +364,39 @@ const App = () => {
     }
   `
 
+  const shareBtnStyle = css`
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    background-color: #040404;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 10px;
+    margin-left: 10px;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    @media screen and (max-width: 500px) {
+      margin-top: 20px;
+      margin-left: 0;
+      margin-bottom: 30px;
+    }
+  `
+
+  const successAreaStyle = css`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  `
+
   return (
     <div css={containerStyle}>
       <div css={confettiStyle} id="rewardId"></div>
-      <h1 css={h1Style}>モグラたたき</h1>
+      <h1 css={h1Style}>モグラたたきマスター</h1>
       <div css={sectionStyle}>
         <div css={descriptionStyle}>
           <div css={descInnerStyle}>
@@ -378,29 +411,49 @@ const App = () => {
             <span css={spanStyle}>得点: <span css={scoreStyle}>{score}</span>点</span>
             {
               remainingTime <= 0
-                ? <span css={timeUpStyle}>時間切れです。またチャレンジしてね！</span>
+                ? (
+                  <>
+                    <span css={timeUpStyle}>時間切れです。またチャレンジしてね！</span>
+                    <TwitterShareButton url={URL} title={MESSAGE_FAIL}>
+                      <div css={shareBtnStyle}>
+                        <XIcon size={24} />
+                        <div> シェア</div>
+                      </div>
+                    </TwitterShareButton>
+                  </>
+                  )
                 : <span>残り時間: <span css={displayStyle}>{remainingTime}</span>秒</span>
             }
           </div>
           <button css={buttonStyle} onClick={handleStart} disabled={isPlaying}>S T A R T</button>
         </div>
       </div>
-      <div>
+      <div css={successAreaStyle}>
         {
           isSuccess
-            ? <p className="message" css={successStyle}>
-                <span>お</span>
-                <span>め</span>
-                <span>で</span>
-                <span>と</span>
-                <span>う</span>
-                <span>！</span>
-                <span>成</span>
-                <span>功</span>
-                <span>で</span>
-                <span>す</span>
-                <span>！</span>
-              </p>
+            ? (
+                <>
+                  <p className="message" css={successStyle}>
+                    <span>お</span>
+                    <span>め</span>
+                    <span>で</span>
+                    <span>と</span>
+                    <span>う</span>
+                    <span>！</span>
+                    <span>成</span>
+                    <span>功</span>
+                    <span>で</span>
+                    <span>す</span>
+                    <span>！</span>
+                  </p>
+                  <TwitterShareButton url={URL} title={MESSAGE_SUCCESS}>
+                    <div css={shareBtnStyle}>
+                      <XIcon size={24} />
+                      <div> シェア</div>
+                    </div>
+                  </TwitterShareButton>
+                </>
+              )
             : <p css={successStyle}></p>
           }
       </div>
