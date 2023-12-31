@@ -2,11 +2,8 @@
 import { css } from '@emotion/react'
 import { useState, useEffect, useRef } from 'react'
 import { SUCCESS_SCORE } from '../constants'
+import Mole from './Mole'
 import hammer from '../assets/hammer.png'
-import hole from '../assets/hole.png'
-import mole from '../assets/mole.png'
-import rainbowMole from '../assets/rainbow-mole.png'
-import blueMole from '../assets/blue-mole.png'
 
 type MoleGridProps = {
   isPlaying: boolean;
@@ -74,21 +71,6 @@ const MoleGrid: React.FC<MoleGridProps> = ({ isPlaying, setIsPlaying, score, set
     })
   }
 
-  const getMoleImage = (isVisible: boolean, moleType: number) => {
-    if (isVisible) {
-      switch (moleType) {
-        case 0:
-          return mole
-        case 1:
-          return blueMole
-        case 2:
-          return rainbowMole
-      }
-    } else {
-      return hole
-    }
-  }
-
   const getMoleType = () => {
     const random = Math.random()
     if (random < 0.1) {
@@ -99,7 +81,6 @@ const MoleGrid: React.FC<MoleGridProps> = ({ isPlaying, setIsPlaying, score, set
       return 0 // 70% の確率で普通のモグラ
     }
   }
-
 
   const handleClick = (index: number) => {
     setMoleVisibility(index, false)
@@ -140,19 +121,13 @@ const MoleGrid: React.FC<MoleGridProps> = ({ isPlaying, setIsPlaying, score, set
     }
   `
 
-  const imageStyle = css`
-    width: 100%;
-    height: auto;
-  `
-
   return (
     <div css={gridStyle}>
       {moles.map((mole, index) => (
-        <img
-          draggable="false"
+        <Mole
           key={index}
-          src={getMoleImage(mole.isVisible, mole.moleType)}
-          css={imageStyle}
+          isVisible={mole.isVisible}
+          moleType={mole.moleType}
           onClick={() => mole.isVisible && handleClick(index)}
         />
       ))}
