@@ -5,4 +5,5 @@
     font-family: 'Zen Maru Gothic', serif;
     background: #96E671;
     width: 100vw;
+    -webkit-tap-highlight-color: transparent; /* Androidで画像をタップした時のハイライトを消す */
   }
