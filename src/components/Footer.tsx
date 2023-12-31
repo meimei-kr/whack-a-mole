@@ -11,7 +11,14 @@ const Footer = () => {
 
   return (
     <footer css={footerStyle}>
-      Created by <a href="https://twitter.com/meimei_kr_">meimei</a>
+      Created by 
+      <a
+        href="https://twitter.com/meimei_kr_"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        meimei
+      </a>
     </footer>
   )
 }
