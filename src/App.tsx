@@ -1,27 +1,18 @@
 /** @jsxImportSource @emotion/react */
-import { css, keyframes } from '@emotion/react'
-import { useState, useEffect, useRef } from 'react'
+import { css } from '@emotion/react'
+import { useState } from 'react'
 import { useReward } from 'react-rewards'
-import { TwitterShareButton, XIcon } from 'react-share'
-import hole from './assets/hole.png'
-import mole from './assets/mole.png'
-import hammer from './assets/hammer.png'
-import rainbowMole from './assets/rainbow-mole.png'
-import blueMole from './assets/blue-mole.png'
-import smMole from './assets/sm-mole.png'
-import smBlueMole from './assets/sm-blue-mole.png'
-import smRainbowMole from './assets/sm-rainbow-mole.png'
 
-const SUCCESS_SCORE = 15
-const TIME_LIMIT = 30
-const URL = "https://whack-a-mole-psi.vercel.app/"
-const MESSAGE_SUCCESS = "おめでとう！モグラたたきマスターになりました！ #ミニアプリweek\n"
-const MESSAGE_FAIL = "モグラたたきマスターまであと一歩！次こそ成功するぞ！ #ミニアプリweek\n"
+import Description from './components/Description'
+import MoleGrid from './components/MoleGrid'
+import Footer from './components/Footer'
+import RemainingTime from './components/RemainingTime'
+import Score from './components/Score'
+import SuccessMessage from './components/SuccessMessage'
+import { TIME_LIMIT } from './constants'
+import StartButton from './components/StartButton'
 
 const App = () => {
-  const [moles, setMoles] = useState<{ isVisible: boolean, moleType: number }[]>(
-    [...Array(9)].fill({ isVisible: false, moleType: 0 })
-  ) // moleType: 0 -> 普通のモグラ, 1 -> 青モグラ, 2 -> 虹モグラ
   const [score, setScore] = useState<number>(0)
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   const [remainingTime, setRemainingTime] = useState<number>(TIME_LIMIT)
@@ -29,173 +20,9 @@ const App = () => {
 
   const { reward } = useReward('rewardId', 'confetti', { lifetime: 1000, spread: 90 });
 
-  // どのモグラがどの穴から出るかを決める
-  const molesIntervalRef = useRef<number | null>(null)
-  useEffect(() => {
-    // ユーザーエージェントの文字列をチェックし、PCかどうかを判定
-    const ua = navigator.userAgent
-    const isPC = !/iPhone|Android|iPad|Mobile/i.test(ua)
-
-    if (isPlaying && score < SUCCESS_SCORE && remainingTime > 0) {
-      molesIntervalRef.current = setInterval(() => {
-        // 最初のモグラを表示
-        const randomIndex = Math.floor(Math.random() * moles.length);
-        setMoleVisibility(randomIndex, true);
-        setTimeout(() => {
-          setMoleVisibility(randomIndex, false);
-        }, isPC ? 800 : 600);
-
-        // 少し遅れて二つ目のモグラを表示
-        setTimeout(() => {
-          let randomOtherIndex: number;
-          do {
-            randomOtherIndex = Math.floor(Math.random() * moles.length);
-          } while (randomOtherIndex === randomIndex); // randomIndexとの重複を避ける
-
-          setMoleVisibility(randomOtherIndex, true);
-          setTimeout(() => {
-            setMoleVisibility(randomOtherIndex, false);
-          }, isPC ? 800 : 600); // 2つ目のモグラが表示されてから非表示になるまでの時間
-        }, isPC ? 400 : 300); // 遅延時間
-      }, isPC ? 900 : 700);
-
-    } else if (molesIntervalRef.current && (score >= SUCCESS_SCORE || remainingTime <= 0)) {
-      setIsPlaying(false)
-      clearInterval(molesIntervalRef.current)
-    }
-
-    return () => {
-      if (molesIntervalRef.current) {
-        clearInterval(molesIntervalRef.current)
-      }
-    }
-  }, [moles, isPlaying, score, remainingTime])
-
-  // 残り時間のカウントダウン処理
-  const timerIntervalRef = useRef<number | null>(null)
-  useEffect(() => {
-    if (isPlaying && remainingTime > 0) {
-      timerIntervalRef.current = setInterval(() => {
-        setRemainingTime((prevTime) => prevTime - 1)
-      }, 1000)
-    } else if (remainingTime <= 0 && timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current)
-    }
-
-    return () => {
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current)
-      }
-    }
-  }, [isPlaying, remainingTime])
-
-  // 成功メッセージのアニメーション
-  useEffect(() => {
-    if (isSuccess) {
-      const messageEl = document.querySelector('.message')
-      if (!messageEl) return
-      messageEl.classList.add('animate')
-    }
-  }, [isSuccess])
-
-  const getMoleTyoe = () => {
-    const random = Math.random()
-    if (random < 0.1) {
-      return 2 // 10% の確率で虹モグラ
-    } else if (random < 0.3) {
-      return 1 // 20% の確率で青モグラ
-    } else {
-      return 0 // 70% の確率で普通のモグラ
-    }
-  }
-
-  const setMoleVisibility = (index: number, isVisible: boolean) => {
-    setMoles((prevMoles) => {
-      const newMoles = [...prevMoles]
-      const moleType = isVisible ? getMoleTyoe() : 0
-      newMoles[index] = { isVisible, moleType }
-      return newMoles
-    })
-  }
-
-  const handleClick = (index: number) => {
-    setMoleVisibility(index, false)
-    setScore((prevScore) => {
-      let newScore: number = prevScore;
-      switch (moles[index].moleType) {
-        case 0:
-          newScore = prevScore + 1
-          break
-        case 1:
-          newScore = prevScore - 1
-          break
-        case 2:
-          newScore = prevScore + 2
-          break
-      }
-
-      if (newScore >= SUCCESS_SCORE) {
-        setIsPlaying(false)
-        setIsSuccess(true)
-        reward()
-      }
-      return newScore
-    })
-  }
-
-  const scrollToBottom = () => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'smooth'
-    })
-  }
-
-  const handleStart = () => {
-    setTimeout(() => {
-      scrollToBottom();
-    }, 100);
-    setIsPlaying(true)
-    setScore(0)
-    setRemainingTime(TIME_LIMIT)
-    setIsSuccess(false)
-  }
-
-  const getMoleImage = (isVisible: boolean, moleType: number) => {
-    if (isVisible) {
-      switch (moleType) {
-        case 0:
-          return mole
-        case 1:
-          return blueMole
-        case 2:
-          return rainbowMole
-      }
-    } else {
-      return hole
-    }
-  }
-
   // CSS
   const containerStyle = css`
     width: 100%;
-  `
-
-  const gridStyle = css`
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    margin: 0 auto 30px;
-    width: 768px;
-    cursor: url(${hammer}), pointer;
-
-    @media screen and (max-width: 500px) {
-      width: 90vw;
-      margin: 0 auto 150px;
-    }
-  `
-
-  const imageStyle = css`
-    width: 100%;
-    height: auto;
   `
 
   const h1Style = css`
@@ -217,150 +44,10 @@ const App = () => {
     }
   `
 
-  const spanStyle = css`
-    margin-right: 30px;
-
-    @media screen and (max-width: 500px) {
-      margin-right: 0;
-    }
-  `
-
-  const displayStyle = css`
-    font-size: 2rem;
-    font-weight: bold;
-    padding: 0 5px;
-  `
-
-  const timeUpStyle = css`
-    @media screen and (max-width: 500px) {
-      display: inline-block;
-    }
-  `
-
-  const scoreStyle = css`
-    ${displayStyle}
-    color: ${score >= SUCCESS_SCORE ? '#C40D17' : 'initial'};
-  `
-
-  const textAnimation = keyframes`
-    0% {
-      transform: translateY(-1rem);
-      opacity: 0;
-    }
-    100% {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  `
-
-  const successStyle = css`
-    text-align: center;
-    color: #C40D17;
-    font-weight: bold;
-    font-size: 1.25rem;
-    height: 2rem;
-    margin: 10px 0;
-    &.animate span {
-      display: inline-block;
-      letter-spacing: -0.15rem;
-      animation: ${textAnimation} 0.8s forwards;
-      transform: translateY(-1rem);
-      opacity: 0;
-    }
-    &.animate span:nth-of-type(1) {
-      animation-delay: 0s;
-    }
-    &.animate span:nth-of-type(2) {
-      animation-delay: 0.2s;
-    }
-    &.animate span:nth-of-type(3) {
-      animation-delay: 0.4s;
-    }
-    &.animate span:nth-of-type(4) {
-      animation-delay: 0.6s;
-    }
-    &.animate span:nth-of-type(5) {
-      animation-delay: 0.8s;
-    }
-    &.animate span:nth-of-type(6) {
-      animation-delay: 1s;
-    }
-    &.animate span:nth-of-type(7) {
-      animation-delay: 1.2s;
-    }
-    &.animate span:nth-of-type(8) {
-      animation-delay: 1.4s;
-    }
-    &.animate span:nth-of-type(9) {
-      animation-delay: 1.6s;
-    }
-    &.animate span:nth-of-type(10) {
-      animation-delay: 1.8s;
-    }
-    &.animate span:nth-of-type(11) {
-      animation-delay: 2s;
-    }
-  `
-
-  const buttonStyle = css`
-    display: block;
-    margin: 20px auto;
-    padding: 20px 30px;
-    border-radius: 30px;
-    border: none;
-    background-color: #FB8B24;
-    color: white;
-    cursor: ${isPlaying ? 'not-allowed' : 'pointer'};
-    font-size: 1.5rem;
-
-    &:hover {
-      opacity: ${isPlaying ? 1 : 0.9};
-    }
-
-    &:active {
-      transform: ${isPlaying ? 'none' : 'translate(0, 2px)'};
-      opacity: ${isPlaying ? 1 : 0.9};
-    }
-  `
-
   const confettiStyle = css`
     position: absolute;
     top: 0;
     left: 50%;
-  `
-  const descriptionStyle = css`
-    width: 220px;
-    height: 150px;
-    background-color: #fff;
-    padding: 30px;
-    border: none;
-    border-radius: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 30px;
-
-    @media screen and (max-width: 500px) {
-      margin-right: 0;
-      margin-bottom: 30px;
-    }
-  `
-  const descInnerStyle = css`
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  `
-
-  const pStyle = css`
-    margin: 0 0 10px;
-  `
-
-  const moleImageStyle = css`
-    height: 2rem;
-    margin: 0 10px;
-    vertical-align: bottom;
   `
 
   const sectionStyle = css`
@@ -373,121 +60,37 @@ const App = () => {
     }
   `
 
-  const shareBtnStyle = css`
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    cursor: pointer;
-    background-color: #040404;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 10px;
-    margin-left: 10px;
-
-    &:hover {
-      opacity: 0.8;
-    }
-
-    @media screen and (max-width: 500px) {
-      margin-top: 20px;
-      margin-left: 0;
-      margin-bottom: 30px;
-    }
-  `
-
-  const successAreaStyle = css`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    @media screen and (max-width: 500px) {
-      flex-direction: column;
-    }
-  `
-
-  const footerStyle = css`
-    font-size: 0.8rem;
-    text-align: center;
-    margin-top: 30px;
-  `
-
   return (
     <div css={containerStyle}>
       <div css={confettiStyle} id="rewardId"></div>
       <h1 css={h1Style}>モグラたたきマスター</h1>
       <div css={sectionStyle}>
-        <div css={descriptionStyle}>
-          <div css={descInnerStyle}>
-            <p css={pStyle}>{SUCCESS_SCORE}点取得でクリアです。</p>
-            <p css={pStyle}>茶モグラ<img src={smMole} css={moleImageStyle} />:  + 1 点</p>
-            <p css={pStyle}>青モグラ<img src={smBlueMole} css={moleImageStyle} />:  - 1 点</p>
-            <p css={pStyle}>虹モグラ<img src={smRainbowMole} css={moleImageStyle} />:  + 2 点</p>
-          </div>
-        </div>
+        <Description />
         <div>
           <div css={scoreTimeStyle}>
-            <span css={spanStyle}>得点: <span css={scoreStyle}>{score}</span>点</span>
-            {
-              remainingTime <= 0
-                ? (
-                  <>
-                    <span css={timeUpStyle}>時間切れです。またチャレンジしてね！</span>
-                    <TwitterShareButton url={URL} title={MESSAGE_FAIL}>
-                      <div css={shareBtnStyle}>
-                        <XIcon size={24} />
-                        <div> シェア</div>
-                      </div>
-                    </TwitterShareButton>
-                  </>
-                  )
-                : <span>残り時間: <span css={displayStyle}>{remainingTime}</span>秒</span>
-            }
+            <Score score={score} />
+            <RemainingTime isPlaying={isPlaying} remainingTime={remainingTime} setRemainingTime={setRemainingTime} />
           </div>
-          <button css={buttonStyle} onClick={handleStart} disabled={isPlaying}>S T A R T</button>
+          <StartButton
+            isPlaying={isPlaying}
+            setIsPlaying={setIsPlaying}
+            setScore={setScore}
+            setRemainingTime={setRemainingTime}
+            setIsSuccess={setIsSuccess}
+          />
         </div>
       </div>
-      <div css={successAreaStyle}>
-        {
-          isSuccess
-            ? (
-                <>
-                  <p className="message" css={successStyle}>
-                    <span>お</span>
-                    <span>め</span>
-                    <span>で</span>
-                    <span>と</span>
-                    <span>う</span>
-                    <span>！</span>
-                    <span>成</span>
-                    <span>功</span>
-                    <span>で</span>
-                    <span>す</span>
-                    <span>！</span>
-                  </p>
-                  <TwitterShareButton url={URL} title={MESSAGE_SUCCESS}>
-                    <div css={shareBtnStyle}>
-                      <XIcon size={24} />
-                      <div> シェア</div>
-                    </div>
-                  </TwitterShareButton>
-                </>
-              )
-            : <p css={successStyle}></p>
-          }
-      </div>
-      <div css={gridStyle}>
-        {moles.map((mole, index) => (
-          <img
-            draggable="false"
-            key={index}
-            src={getMoleImage(mole.isVisible, mole.moleType)}
-            css={imageStyle}
-            onClick={() => mole.isVisible && handleClick(index)}
-          />
-        ))}
-      </div>
-      <footer css={footerStyle}>Created by <a href="https://twitter.com/meimei_kr_">meimei</a></footer>
+      <SuccessMessage isSuccess={isSuccess} />
+      <MoleGrid
+        isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
+        score={score}
+        setScore={setScore}
+        remainingTime={remainingTime}
+        setIsSuccess={setIsSuccess}
+        reward={reward}
+      />
+      <Footer />
     </div>
   )
 }
