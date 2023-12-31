@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "lint-staged": {
-    "*.{ts,tsx}": ["eslint", "prettier --write"]
+    "*.{ts,tsx}": [
+      "eslint",
+      "prettier --write"
+    ]
   },
   "scripts": {
     "dev": "vite",
@@ -15,8 +18,6 @@
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
-    "eslint-config-prettier": "^9.1.0",
-    "prettier": "^3.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-rewards": "^2.0.4",
@@ -29,10 +30,12 @@
     "@typescript-eslint/parser": "^6.14.0",
     "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "husky": "^8.0.0",
     "lint-staged": "^15.2.0",
+    "prettier": "^3.1.1",
     "typescript": "^5.2.2",
     "vite": "^5.0.8"
   }
