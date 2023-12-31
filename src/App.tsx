@@ -15,8 +15,8 @@ import smRainbowMole from './assets/sm-rainbow-mole.png'
 const SUCCESS_SCORE = 15
 const TIME_LIMIT = 30
 const URL = "https://whack-a-mole-psi.vercel.app/"
-const MESSAGE_SUCCESS = "おめでとう！モグラたたきマスターになりました！ #ミニアプリweek"
-const MESSAGE_FAIL = "モグラたたきマスターまであと一歩！次こそ成功するぞ！ #ミニアプリweek"
+const MESSAGE_SUCCESS = "おめでとう！モグラたたきマスターになりました！ #ミニアプリweek\n"
+const MESSAGE_FAIL = "モグラたたきマスターまであと一歩！次こそ成功するぞ！ #ミニアプリweek\n"
 
 const App = () => {
   const [moles, setMoles] = useState<{ isVisible: boolean, moleType: number }[]>(
@@ -196,6 +196,7 @@ const App = () => {
   const imageStyle = css`
     width: 100%;
     height: auto;
+    -webkit-tap-highlight-color: transparent; // Androidで画像をタップした時のハイライトを消す
   `
 
   const h1Style = css`
@@ -393,6 +394,12 @@ const App = () => {
     align-items: center;
   `
 
+  const footerStyle = css`
+    font-size: 0.8rem;
+    text-align: center;
+    margin-top: 30px;
+  `
+
   return (
     <div css={containerStyle}>
       <div css={confettiStyle} id="rewardId"></div>
@@ -468,6 +475,7 @@ const App = () => {
           />
         ))}
       </div>
+      <footer css={footerStyle}>Created by <a href="https://twitter.com/meimei_kr_">meimei</a></footer>
     </div>
   )
 }
